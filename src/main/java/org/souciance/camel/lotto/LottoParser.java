@@ -14,9 +14,13 @@ public class LottoParser {
         System.out.println("hej"+body);
         Object document = Configuration.defaultConfiguration().jsonProvider().parse(body);
         int drawNumberSaturday = JsonPath.read(document, "$.results[0].drawNumber");
-        exchange.getIn().setHeader("LOTTO_SATURDAY_URI", "https4://api.www.svenskaspel.se/external/draw/lottosaturday/draws/".concat(String.valueOf(drawNumberSaturday)).concat("/result?accesskey=81d8f066-de28-4795-930d-78a1054086e5"));
+        exchange.getIn().setHeader(
+                "LOTTO_SATURDAY_URI", "https4://api.www.svenskaspel.se/external/draw/lottosaturday/draws/"
+                        .concat(String.valueOf(drawNumberSaturday)).concat("/result?accesskey=" + getAccessKey()));
         int drawNumberWednesday = JsonPath.read(document, "$.results[1].drawNumber");
-        exchange.getIn().setHeader("LOTTO_WEDNESDAY_URI", "https4://api.www.svenskaspel.se/external/draw/lottowednesday/draws/".concat(String.valueOf(drawNumberWednesday)).concat("/result?accesskey=81d8f066-de28-4795-930d-78a1054086e5"));
+        exchange.getIn().setHeader(
+                "LOTTO_WEDNESDAY_URI", "https4://api.www.svenskaspel.se/external/draw/lottowednesday/draws/"
+                        .concat(String.valueOf(drawNumberSaturday)).concat("/result?accesskey=" + getAccessKey()));
         exchange.getIn().setBody(null);
     }
 
@@ -47,4 +51,10 @@ public class LottoParser {
         String prettyPrintExtraNumbers = String.join(" ", extraNumbers);
         return "Rätt rad för lotto 2 för " + day + " är " + prettyPrintMainNumbers + "och extra siffrorna är " + prettyPrintExtraNumbers;
     }
+
+    private static String getAccessKey() {
+        return System.getenv("accessKey");
+    }
 }
+
+
