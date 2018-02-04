@@ -1,16 +1,15 @@
 package org.souciance.camel.lotto;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.PropertyInject;
 import org.apache.camel.builder.RouteBuilder;
 
 /**
  * A Camel Java DSL Router
  */
 public class LottoRoute extends RouteBuilder {
-
-    /**
-     * Let's configure the Camel routing rules using Java code...
-     */
+    @PropertyInject("{{env:accessKey}}")
+    private String accessKey;
     public void configure() {
         onException(Exception.class).to("direct:ErrorHandler");
 
@@ -19,7 +18,7 @@ public class LottoRoute extends RouteBuilder {
                     exchange.getIn().setHeader(Exchange.HTTP_METHOD, "GET");
                     exchange.getIn().setHeader("Accept", "application/json");
                 })
-                .to("https4://api.www.svenskaspel.se/external/draw/lotto/draws/result?accesskey=81d8f066-de28-4795-930d-78a1054086e5")
+                .to("https4://api.www.svenskaspel.se/external/draw/lotto/draws/result?accesskey=" + accessKey)
                 .convertBodyTo(String.class)
                 .log("${body} and ${headers}")
                 .bean(LottoParser.class, "getLottoDrawNumbers")
